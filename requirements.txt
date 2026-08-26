@@ -9,3 +9,4 @@ sentence-transformers
 shap
 streamlit
 uvicorn
+pytest
