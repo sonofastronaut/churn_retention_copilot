@@ -4,9 +4,17 @@ from openai import OpenAI
 
 from churn_copilot.schemas import RiskProfile, RetentionRecommendation, CustomerAnalysis
 import json
+from functools import lru_cache
 
 load_dotenv()
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+
+@lru_cache(maxsize=1)
+def get_client() -> OpenAI:
+    return OpenAI(
+        api_key=os.getenv("OPENAI_API_KEY")
+    )
+
 
 def build_retention_prompt(
     risk_profile: RiskProfile,
@@ -53,7 +61,7 @@ def generate_recommendation(
         risk_profile,
         policies,
     )
-
+    client = get_client()
     response = client.responses.parse(
         model="gpt-5.6-luna",
         input=prompt,
@@ -115,7 +123,7 @@ to understand the reference.
             "content": question,
         }
     )
-
+    client = get_client()
     response = client.responses.create(
         model="gpt-5.6-luna",
         input=messages,
