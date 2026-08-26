@@ -1,1 +1,1 @@
-# home_credit_default
+# Churn Retention Copilot
