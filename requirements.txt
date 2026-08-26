@@ -1,0 +1,11 @@
+catboost
+fastapi
+openai
+pandas
+pydantic
+python-dotenv
+qdrant-client
+sentence-transformers
+shap
+streamlit
+uvicorn

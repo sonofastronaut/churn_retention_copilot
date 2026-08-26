@@ -1,0 +1,55 @@
+[
+  {
+    "id": "equipment_plan_expiring",
+    "title": "Equipment plan renewal",
+    "description": "Use when the customer's equipment plan is approaching expiration.",
+    "allowed_actions": [
+      "Send a renewal reminder",
+      "Offer assistance reviewing renewal options",
+      "Offer an account and plan review"
+    ],
+    "restrictions": [
+      "Do not offer a discount unless explicitly authorized by another policy"
+    ]
+  },
+  {
+    "id": "payment_issue",
+    "title": "Outstanding balance support",
+    "description": "Use when payment-related signals are relevant to the customer.",
+    "allowed_actions": [
+      "Ask the customer to verify the outstanding balance",
+      "Direct the customer to billing support",
+      "Explain available standard payment channels"
+    ],
+    "restrictions": [
+      "Do not invent payment plans",
+      "Do not promise debt forgiveness"
+    ]
+  },
+  {
+    "id": "service_quality",
+    "title": "Service quality review",
+    "description": "Use when call quality or service-related signals are relevant.",
+    "allowed_actions": [
+      "Offer a service quality review",
+      "Direct the customer to technical support",
+      "Ask whether the customer has experienced service issues"
+    ],
+    "restrictions": [
+      "Do not claim that a technical problem exists unless confirmed"
+    ]
+  },
+  {
+    "id": "low_risk_customer",
+    "title": "Low-risk retention",
+    "description": "Use when predicted churn probability is low.",
+    "allowed_actions": [
+      "Use light-touch proactive communication",
+      "Provide relevant account information",
+      "Offer assistance without aggressive incentives"
+    ],
+    "restrictions": [
+      "Avoid expensive retention incentives by default"
+    ]
+  }
+]
