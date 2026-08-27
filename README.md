@@ -461,6 +461,25 @@ The project demonstrates:
 - Docker containerization;
 - Python package structure with `pyproject.toml`.
 
+### Retrieval Evaluation
+
+The semantic retriever was evaluated on a small synthetic set of paraphrased retention queries.
+
+Current result:
+
+**Top-1 retrieval accuracy: 100% (12/12)**
+
+The evaluation covers four policy categories:
+
+- equipment plan expiration;
+- payment-related issues;
+- service quality issues;
+- low-risk customers.
+
+The project also includes irrelevant-query cases to verify that the retriever can reject out-of-domain requests using a relevance threshold.
+
+The evaluation dataset is intentionally small and synthetic, so the metric should be treated as a functional benchmark rather than a production-quality retrieval evaluation.
+
 ## Disclaimer
 
 The retention policies included in this repository are synthetic demonstration examples created specifically for this project.
