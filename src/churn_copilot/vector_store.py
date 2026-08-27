@@ -184,4 +184,5 @@ def retrieve_policies_semantic(
 
 
 if __name__ == "__main__":
-    print("Vector store ready")
+    build_policy_index()
+    print("Policy index created")
