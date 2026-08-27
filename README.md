@@ -6,6 +6,16 @@ An end-to-end AI copilot for customer churn analysis and retention decision supp
 
 The project combines machine learning, explainability, semantic RAG, structured LLM outputs, multi-turn chat, FastAPI, Streamlit, and Docker in a single application.
 
+## Churn Model
+
+The churn prediction model used in this project was developed and evaluated separately.
+
+The companion repository contains the full ML workflow, including data exploration, feature preparation, CatBoost training, model evaluation, and the notebook used to produce the exported model:
+
+**[Customer Churn Prediction — model training repository](https://github.com/sonofastronaut/mts_churn)**
+
+This repository focuses on the production-style application layer built around that model: inference, SHAP-based explainability, semantic policy retrieval, policy-grounded LLM recommendations, API serving, and evaluation.
+
 ## What the Project Does
 
 Given a customer profile, the system:
