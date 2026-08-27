@@ -1,3 +1,4 @@
+from functools import lru_cache
 from pathlib import Path
 
 from qdrant_client import QdrantClient, models
@@ -6,7 +7,6 @@ from sentence_transformers import SentenceTransformer
 from churn_copilot.retriever import load_policies
 from churn_copilot.schemas import RiskProfile
 
-from functools import lru_cache
 
 FEATURE_LABELS = {
     "numdayscontractequipmentplanexpiring": (
@@ -32,14 +32,21 @@ QDRANT_PATH = (
 COLLECTION_NAME = "retention_policies"
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 
+MIN_RELEVANCE_SCORE = 0.30
+
 
 @lru_cache(maxsize=1)
 def get_embedding_model() -> SentenceTransformer:
     return SentenceTransformer(EMBEDDING_MODEL)
 
+
 def policy_to_text(policy: dict) -> str:
-    allowed_actions = ", ".join(policy["allowed_actions"])
-    restrictions = ", ".join(policy["restrictions"])
+    allowed_actions = ", ".join(
+        policy["allowed_actions"]
+    )
+    restrictions = ", ".join(
+        policy["restrictions"]
+    )
 
     return (
         f"Title: {policy['title']}. "
@@ -65,8 +72,12 @@ def build_policy_index() -> None:
         path=str(QDRANT_PATH)
     )
 
-    if client.collection_exists(COLLECTION_NAME):
-        client.delete_collection(COLLECTION_NAME)
+    if client.collection_exists(
+        COLLECTION_NAME
+    ):
+        client.delete_collection(
+            COLLECTION_NAME
+        )
 
     client.create_collection(
         collection_name=COLLECTION_NAME,
@@ -93,10 +104,10 @@ def build_policy_index() -> None:
     )
 
 
-def search_policies(
+def search_policy_matches(
     query: str,
     top_k: int = 3,
-) -> list[dict]:
+) -> list[tuple[dict, float]]:
     embedding_model = get_embedding_model()
 
     query_vector = embedding_model.encode(
@@ -115,8 +126,34 @@ def search_policies(
     ).points
 
     return [
-        result.payload
+        (
+            result.payload,
+            float(result.score),
+        )
         for result in results
+    ]
+
+
+def search_policies(
+    query: str,
+    top_k: int = 3,
+) -> list[dict]:
+    matches = search_policy_matches(
+        query=query,
+        top_k=top_k,
+    )
+
+    if not matches:
+        return []
+
+    top_score = matches[0][1]
+
+    if top_score < MIN_RELEVANCE_SCORE:
+        return []
+
+    return [
+        policy
+        for policy, _ in matches
     ]
 
 
@@ -133,17 +170,18 @@ def retrieve_policies_semantic(
     ]
 
     query = (
-    f"Customer retention situation. "
-    f"Predicted churn probability: "
-    f"{risk_profile.churn_probability:.2%}. "
-    "Factors pushing the churn prediction upward: "
-    + "; ".join(risk_drivers)
-)
+        "Customer retention situation. "
+        f"Predicted churn probability: "
+        f"{risk_profile.churn_probability:.2%}. "
+        "Factors pushing the churn prediction upward: "
+        + "; ".join(risk_drivers)
+    )
 
     return search_policies(
         query=query,
         top_k=top_k,
     )
+
 
 if __name__ == "__main__":
     print("Vector store ready")

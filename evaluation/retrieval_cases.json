@@ -1,0 +1,53 @@
+[
+  {
+    "query": "The customer's device contract will end soon and they may need help with renewal options",
+    "expected_policy": "equipment_plan_expiring"
+  },
+  {
+    "query": "Their equipment agreement is nearing its end date",
+    "expected_policy": "equipment_plan_expiring"
+  },
+  {
+    "query": "We should contact the customer before their device plan expires",
+    "expected_policy": "equipment_plan_expiring"
+  },
+
+  {
+    "query": "The customer owes money on the account and may need billing assistance",
+    "expected_policy": "payment_issue"
+  },
+  {
+    "query": "There are outstanding charges that have not been paid",
+    "expected_policy": "payment_issue"
+  },
+  {
+    "query": "The account shows payment problems and overdue balance",
+    "expected_policy": "payment_issue"
+  },
+
+  {
+    "query": "The customer reports dropped calls and unreliable phone service",
+    "expected_policy": "service_quality"
+  },
+  {
+    "query": "There may be connectivity problems affecting call reliability",
+    "expected_policy": "service_quality"
+  },
+  {
+    "query": "Call failures suggest the customer may need technical assistance",
+    "expected_policy": "service_quality"
+  },
+
+  {
+    "query": "The customer is unlikely to leave and should not receive costly incentives",
+    "expected_policy": "low_risk_customer"
+  },
+  {
+    "query": "Churn probability is minimal, so only gentle proactive contact is appropriate",
+    "expected_policy": "low_risk_customer"
+  },
+  {
+    "query": "This is a stable customer with little indication of leaving",
+    "expected_policy": "low_risk_customer"
+  }
+]
