@@ -1,5 +1,6 @@
 catboost
 fastapi
+httpx
 openai
 pandas
 pydantic
