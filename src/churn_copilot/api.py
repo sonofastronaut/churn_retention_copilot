@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from fastapi import FastAPI
 
 from churn_copilot.schemas import (
@@ -6,15 +8,39 @@ from churn_copilot.schemas import (
     FollowupRequest,
     FollowupResponse,
 )
-from churn_copilot.service import (
-    analyze_customer,
-)
+from churn_copilot.service import analyze_customer
 
 
 app = FastAPI(
     title="Churn Retention Copilot API",
     version="0.2.0",
 )
+
+
+def answer_followup(
+    question: str,
+    analysis: CustomerAnalysis,
+    chat_history: list[dict],
+) -> str:
+    """
+    Lazy proxy around the real LLM function.
+
+    Keeping this function at module level has two benefits:
+
+    1. Importing churn_copilot.api does not eagerly import
+       the OpenAI/LLM stack.
+    2. Tests can still monkeypatch
+       churn_copilot.api.answer_followup.
+    """
+    from churn_copilot.llm import (
+        answer_followup as llm_answer_followup,
+    )
+
+    return llm_answer_followup(
+        question=question,
+        analysis=analysis,
+        chat_history=chat_history,
+    )
 
 
 @app.get("/health")
@@ -43,18 +69,9 @@ def analyze(
 def chat(
     request: FollowupRequest,
 ) -> FollowupResponse:
-    # Lazy import.
-    #
-    # API startup should not load LLM-related
-    # code until /chat is actually called.
-    from churn_copilot.llm import (
-        answer_followup,
-    )
-
     chat_history = [
         message.model_dump()
-        for message
-        in request.chat_history
+        for message in request.chat_history
     ]
 
     answer = answer_followup(
