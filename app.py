@@ -14,9 +14,7 @@ from churn_copilot.schemas import (
 
 
 st.set_page_config(
-    page_title=(
-        "Churn Retention Copilot"
-    ),
+    page_title="Churn Retention Copilot",
     page_icon="🤖",
 )
 
@@ -25,18 +23,9 @@ st.title(
     "Churn Retention Copilot"
 )
 
-
 st.write(
     "AI assistant for customer churn analysis "
     "and retention recommendations."
-)
-
-
-st.chat_message(
-    "assistant"
-).write(
-    "Привет! Выбери параметры клиента, "
-    "и я проанализирую риск оттока."
 )
 
 
@@ -45,6 +34,18 @@ if (
     not in st.session_state
 ):
     st.session_state.chat_history = []
+
+
+if (
+    "result"
+    not in st.session_state
+):
+    st.chat_message(
+        "assistant"
+    ).write(
+        "Привет! Выбери параметры клиента, "
+        "и я проанализирую риск оттока."
+    )
 
 
 with st.sidebar:
@@ -68,33 +69,25 @@ with st.sidebar:
         format="%.4f",
     )
 
-    callfailurerate = (
-        st.number_input(
-            "Call failure rate",
-            value=0.01,
-            format="%.4f",
-        )
+    callfailurerate = st.number_input(
+        "Call failure rate",
+        value=0.01,
+        format="%.4f",
     )
 
-    monthlybilledamount = (
-        st.number_input(
-            "Monthly billed amount",
-            value=70.0,
-        )
+    monthlybilledamount = st.number_input(
+        "Monthly billed amount",
+        value=70.0,
     )
 
-    numberofcomplaints = (
-        st.number_input(
-            "Number of complaints",
-            value=2.0,
-        )
+    numberofcomplaints = st.number_input(
+        "Number of complaints",
+        value=2.0,
     )
 
-    numberofmonthunpaid = (
-        st.number_input(
-            "Number of months unpaid",
-            value=1.0,
-        )
+    numberofmonthunpaid = st.number_input(
+        "Number of months unpaid",
+        value=1.0,
     )
 
     numdayscontractequipmentplanexpiring = (
@@ -104,25 +97,19 @@ with st.sidebar:
         )
     )
 
-    penaltytoswitch = (
-        st.number_input(
-            "Penalty to switch",
-            value=200.0,
-        )
+    penaltytoswitch = st.number_input(
+        "Penalty to switch",
+        value=200.0,
     )
 
-    totalminsusedinlastmonth = (
-        st.number_input(
-            "Minutes used last month",
-            value=250.0,
-        )
+    totalminsusedinlastmonth = st.number_input(
+        "Minutes used last month",
+        value=250.0,
     )
 
-    unpaidbalance = (
-        st.number_input(
-            "Unpaid balance",
-            value=100.0,
-        )
+    unpaidbalance = st.number_input(
+        "Unpaid balance",
+        value=100.0,
     )
 
     percentagecalloutsidenetwork = (
@@ -133,18 +120,14 @@ with st.sidebar:
         )
     )
 
-    totalcallduration = (
-        st.number_input(
-            "Total call duration",
-            value=3500.0,
-        )
+    totalcallduration = st.number_input(
+        "Total call duration",
+        value=3500.0,
     )
 
-    avgcallduration = (
-        st.number_input(
-            "Average call duration",
-            value=700.0,
-        )
+    avgcallduration = st.number_input(
+        "Average call duration",
+        value=700.0,
     )
 
     analyze_button = st.button(
@@ -165,9 +148,7 @@ if analyze_button:
         age=age,
         annualincome=annualincome,
         calldroprate=calldroprate,
-        callfailurerate=(
-            callfailurerate
-        ),
+        callfailurerate=callfailurerate,
         monthlybilledamount=(
             monthlybilledamount
         ),
@@ -180,34 +161,26 @@ if analyze_button:
         numdayscontractequipmentplanexpiring=(
             numdayscontractequipmentplanexpiring
         ),
-        penaltytoswitch=(
-            penaltytoswitch
-        ),
+        penaltytoswitch=penaltytoswitch,
         totalminsusedinlastmonth=(
             totalminsusedinlastmonth
         ),
-        unpaidbalance=(
-            unpaidbalance
-        ),
+        unpaidbalance=unpaidbalance,
         percentagecalloutsidenetwork=(
             percentagecalloutsidenetwork
         ),
         totalcallduration=(
             totalcallduration
         ),
-        avgcallduration=(
-            avgcallduration
-        ),
+        avgcallduration=avgcallduration,
     )
 
     with st.spinner(
         "Analyzing customer..."
     ):
         try:
-            st.session_state.result = (
-                analyze_customer(
-                    customer
-                )
+            result = analyze_customer(
+                customer
             )
 
         except httpx.ConnectError:
@@ -219,8 +192,7 @@ if analyze_button:
         except httpx.TimeoutException:
             st.error(
                 "Backend request timed out. "
-                "Check API logs to see which "
-                "analysis step is slow."
+                "Check API timing logs."
             )
 
         except httpx.HTTPStatusError as exc:
@@ -233,6 +205,11 @@ if analyze_button:
             st.error(
                 "Backend request failed: "
                 f"{exc}"
+            )
+
+        else:
+            st.session_state.result = (
+                result
             )
 
 
@@ -354,9 +331,7 @@ if "result" in st.session_state:
             try:
                 followup_answer = (
                     answer_followup(
-                        question=(
-                            user_question
-                        ),
+                        question=user_question,
                         analysis=result,
                         chat_history=(
                             st.session_state
@@ -378,9 +353,7 @@ if "result" in st.session_state:
                 )
                 st.stop()
 
-            except (
-                httpx.HTTPStatusError
-            ) as exc:
+            except httpx.HTTPStatusError as exc:
                 st.error(
                     "Backend returned an error: "
                     f"{exc.response.status_code}"

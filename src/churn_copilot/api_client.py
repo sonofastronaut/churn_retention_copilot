@@ -40,10 +40,7 @@ def health_check() -> bool:
     except httpx.HTTPError:
         return False
 
-    return (
-        response.json().get("status")
-        == "ok"
-    )
+    return response.json().get("status") == "ok"
 
 
 def analyze_customer(
@@ -77,10 +74,8 @@ def answer_followup(
 
     response.raise_for_status()
 
-    result = (
-        FollowupResponse.model_validate(
-            response.json()
-        )
+    result = FollowupResponse.model_validate(
+        response.json()
     )
 
     return result.answer

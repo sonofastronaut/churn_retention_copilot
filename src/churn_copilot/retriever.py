@@ -36,8 +36,7 @@ def retrieve_policies(
 
     risk_features = {
         factor.feature
-        for factor
-        in risk_profile.risk_drivers
+        for factor in risk_profile.risk_drivers
     }
 
     if (
@@ -49,8 +48,7 @@ def retrieve_policies(
         )
 
     if (
-        "unpaidbalance"
-        in risk_features
+        "unpaidbalance" in risk_features
         or "numberofmonthunpaid"
         in risk_features
     ):
@@ -59,10 +57,8 @@ def retrieve_policies(
         )
 
     if (
-        "callfailurerate"
-        in risk_features
-        or "calldroprate"
-        in risk_features
+        "callfailurerate" in risk_features
+        or "calldroprate" in risk_features
     ):
         selected_ids.add(
             "service_quality"

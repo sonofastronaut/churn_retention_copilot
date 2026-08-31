@@ -74,10 +74,6 @@ MIN_RELEVANCE_SCORE = 0.30
 
 @lru_cache(maxsize=1)
 def get_embedding_model() -> SentenceTransformer:
-    # Lazy import is intentional.
-    #
-    # In rules mode torch / transformers
-    # should never be imported.
     from sentence_transformers import (
         SentenceTransformer,
     )
@@ -89,8 +85,6 @@ def get_embedding_model() -> SentenceTransformer:
 
 @lru_cache(maxsize=1)
 def get_qdrant_client() -> QdrantClient:
-    # Qdrant is also imported only when
-    # semantic retrieval is actually used.
     from qdrant_client import (
         QdrantClient,
     )
@@ -113,18 +107,13 @@ def policy_to_text(
 
     return (
         f"Title: {policy['title']}. "
-        f"Description: "
-        f"{policy['description']} "
-        f"Allowed actions: "
-        f"{allowed_actions}. "
-        f"Restrictions: "
-        f"{restrictions}."
+        f"Description: {policy['description']} "
+        f"Allowed actions: {allowed_actions}. "
+        f"Restrictions: {restrictions}."
     )
 
 
 def build_policy_index() -> None:
-    # Imported only when the index
-    # is explicitly being built.
     from qdrant_client import models
 
     policies = load_policies()
@@ -138,10 +127,8 @@ def build_policy_index() -> None:
         for policy in policies
     ]
 
-    embeddings = (
-        embedding_model.encode(
-            texts
-        )
+    embeddings = embedding_model.encode(
+        texts
     )
 
     client = get_qdrant_client()
@@ -157,9 +144,7 @@ def build_policy_index() -> None:
         collection_name=COLLECTION_NAME,
         vectors_config=models.VectorParams(
             size=embeddings.shape[1],
-            distance=(
-                models.Distance.COSINE
-            ),
+            distance=models.Distance.COSINE,
         ),
     )
 
@@ -195,11 +180,9 @@ def search_policy_matches(
         get_embedding_model()
     )
 
-    query_vector = (
-        embedding_model.encode(
-            query
-        ).tolist()
-    )
+    query_vector = embedding_model.encode(
+        query
+    ).tolist()
 
     client = get_qdrant_client()
 
@@ -209,8 +192,7 @@ def search_policy_matches(
         raise RuntimeError(
             "Qdrant policy index does not exist. "
             "Build it with: "
-            "python -m "
-            "churn_copilot.vector_store"
+            "python -m churn_copilot.vector_store"
         )
 
     results = client.query_points(
@@ -269,7 +251,8 @@ def retrieve_policies_semantic(
         )
 
         risk_drivers.append(
-            f"{label} with value {factor.value}"
+            f"{label} with value "
+            f"{factor.value}"
         )
 
     query = (
@@ -284,4 +267,12 @@ def retrieve_policies_semantic(
     return search_policies(
         query=query,
         top_k=top_k,
+    )
+
+
+if __name__ == "__main__":
+    build_policy_index()
+
+    print(
+        "Policy index created"
     )

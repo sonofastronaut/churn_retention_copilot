@@ -3,9 +3,7 @@ from __future__ import annotations
 import logging
 from time import perf_counter
 
-from churn_copilot.config import (
-    RETRIEVAL_MODE,
-)
+from churn_copilot.config import RETRIEVAL_MODE
 from churn_copilot.schemas import (
     CustomerAnalysis,
     CustomerFeatures,
@@ -23,8 +21,7 @@ def retrieve_policies(
 ) -> list[dict]:
     if RETRIEVAL_MODE == "rules":
         from churn_copilot.retriever import (
-            retrieve_policies
-            as retrieve_policies_rules,
+            retrieve_policies as retrieve_policies_rules,
         )
 
         return retrieve_policies_rules(
@@ -51,15 +48,18 @@ def analyze_customer(
 ) -> CustomerAnalysis:
     started = perf_counter()
 
-    # Heavy imports intentionally stay here.
-    #
-    # Importing service.py itself should not load
-    # CatBoost, SHAP, SentenceTransformer or Qdrant.
+    import_started = perf_counter()
+
     from churn_copilot.llm import (
         generate_recommendation,
     )
     from churn_copilot.risk_profile import (
         build_risk_profile,
+    )
+
+    logger.info(
+        "request_imports_duration=%.3fs",
+        perf_counter() - import_started,
     )
 
     step_started = perf_counter()
@@ -87,11 +87,9 @@ def analyze_customer(
 
     step_started = perf_counter()
 
-    recommendation = (
-        generate_recommendation(
-            risk_profile,
-            policies,
-        )
+    recommendation = generate_recommendation(
+        risk_profile,
+        policies,
     )
 
     logger.info(
